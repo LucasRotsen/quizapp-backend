@@ -1,5 +1,11 @@
 # Virtual Environment
+.venv
+
+# ENV file
 .env
 
 # Pycharm Stuff
 .idea
+
+# Pycache
+__pycache__
