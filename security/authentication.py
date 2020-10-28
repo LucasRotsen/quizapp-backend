@@ -7,7 +7,7 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 
 from services import users
-from api.schemas import TokenData, UserP
+from api.schemas import TokenData
 from api.exceptions import InvalidCredentialsException
 from api.config import SECRET_KEY, HASHING_ALGORITHM, TOKEN_EXPIRE_MINUTES
 
@@ -61,5 +61,5 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return await users.get_user(username=token_data.username)
 
 
-async def get_current_active_user(current_user: UserP = Depends(get_current_user)):
+async def get_current_active_user(current_user=Depends(get_current_user)):
     return current_user
