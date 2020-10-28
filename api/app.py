@@ -3,8 +3,10 @@ from loguru import logger
 from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordRequestForm
 
+from api.initializer import init
+from database import fake_users_db
+from api.schemas import Token, UserP
 from api.exceptions import IncorrectUsernameOrPassword
-from database.models import fake_users_db, Token, User
 from security.authentication import authenticate_user, create_access_token, get_current_active_user
 
 app = FastAPI(
@@ -14,6 +16,11 @@ app = FastAPI(
     docs_url='/documentation',
     redoc_url=None,
 )
+
+
+@app.on_event('startup')
+async def init_database_orm():
+    init(app)
 
 
 @app.post("/login", response_model=Token)
@@ -32,8 +39,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     }
 
 
-@app.get("/users/me/", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
+@app.get("/users/me/", response_model=UserP)
+async def read_users_me(current_user: UserP = Depends(get_current_active_user)):
     return current_user
 
 
