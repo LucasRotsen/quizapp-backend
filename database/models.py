@@ -1,26 +1,30 @@
-from datetime import datetime
-
 from tortoise import fields
 from tortoise.models import Model
 from tortoise.contrib.pydantic import pydantic_model_creator
+
+from security.authentication import get_password_hash
 
 
 class User(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=50, null=False)
     username = fields.CharField(max_length=20, unique=True, null=False)
-    password = fields.CharField(max_length=20, null=False)
+    password = fields.CharField(max_length=100, null=False)
     created_at = fields.DatetimeField(auto_now_add=True)
 
     quizzes: fields.ReverseRelation["Quiz"]
     answers: fields.ReverseRelation["Answer"]
+
+    async def save(self, *args, **kwargs) -> None:
+        self.password = get_password_hash(self.password)
+        await super().save(*args, **kwargs)
 
     class Meta:
         table = "users"
         ordering = ["created_at"]
 
     class PydanticMeta:
-        exclude = ["password", "created_at"]
+        exclude = ["created_at"]
 
 
 class Quiz(Model):
@@ -104,7 +108,7 @@ class Subject(Model):
         table = "subjects"
 
 
-User_Pydantic = pydantic_model_creator(User, name="User")
+User_Pydantic = pydantic_model_creator(User, name="User", exclude=("password",))
 UserIn_Pydantic = pydantic_model_creator(User, name="UserIn", exclude_readonly=True)
 
 Quiz_Pydantic = pydantic_model_creator(Quiz, name="Quiz")
