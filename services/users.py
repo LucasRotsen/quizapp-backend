@@ -1,4 +1,4 @@
-from database.models import UserInDB
+from api.schemas import UserInDB
 
 
 def get_user(db, username: str):
