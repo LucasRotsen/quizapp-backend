@@ -6,8 +6,9 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 
+from database import fake_users_db
 from services.users import get_user
-from database.models import fake_users_db, TokenData, User
+from api.schemas import TokenData, UserP
 from api.config import SECRET_KEY, HASHING_ALGORITHM, TOKEN_EXPIRE_MINUTES
 from api.exceptions import InvalidCredentialsException, InactiveUserException
 
@@ -65,7 +66,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
+async def get_current_active_user(current_user: UserP = Depends(get_current_user)):
     if current_user.disabled:
         raise InactiveUserException
 
