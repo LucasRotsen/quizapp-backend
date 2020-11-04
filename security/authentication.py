@@ -35,7 +35,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = timedel
 
 
 async def authenticate_user(username: str, password: str):
-    user = await users.get_user(username, fetch_password=True)
+    user = await users.get(username, fetch_password=True)
 
     if not verify_password(password, user.password):
         return False
@@ -58,8 +58,4 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise InvalidCredentialsException
 
-    return await users.get_user(username=token_data.username)
-
-
-async def get_current_active_user(current_user=Depends(get_current_user)):
-    return current_user
+    return await users.get(username=token_data.username)
