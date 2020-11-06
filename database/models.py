@@ -1,5 +1,5 @@
-from tortoise import fields
 from tortoise.models import Model
+from tortoise import Tortoise, fields
 from tortoise.contrib.pydantic import pydantic_model_creator
 
 from security.authentication import get_password_hash
@@ -31,7 +31,7 @@ class User(Model):
         ordering = ["created_at"]
 
     class PydanticMeta:
-        exclude = ["created_at"]
+        exclude = ("created_at",)
 
 
 class Quiz(Model):
@@ -50,8 +50,7 @@ class Quiz(Model):
 
     creator: fields.ForeignKeyRelation["User"] = fields.ForeignKeyField(
         model_name="models.User",
-        related_name="quizzes",
-        to_field="id"
+        related_name="quizzes"
     )
 
     def created_date(self) -> str:
@@ -64,6 +63,10 @@ class Quiz(Model):
         table = "quizzes"
         computed = ["created_date"]
 
+    class PydanticMeta:
+        computed = ["created_date"]
+        exclude = ("created_at", "quiz_questionss", "creator",)
+
 
 class Question(Model):
     id = fields.IntField(pk=True)
@@ -75,16 +78,16 @@ class Question(Model):
     alternative_d = fields.CharField(max_length=100, null=True)
     answer = fields.CharField(max_length=1, null=True)
 
-    quizzes: fields.ManyToManyRelation["Question"]
-
     subject: fields.ForeignKeyNullableRelation["Subject"] = fields.ForeignKeyField(
         model_name="models.Subject",
-        related_name="questions",
-        to_field="id"
+        related_name="questions"
     )
 
     class Meta:
         table = "questions"
+
+    class PydanticMeta:
+        exclude = ("quiz_questionss", "answer",)
 
 
 class QuizQuestion(Model):
@@ -119,6 +122,8 @@ class Subject(Model):
     class Meta:
         table = "subjects"
 
+
+Tortoise.init_models(["database.models"], "models")
 
 User_Pydantic = pydantic_model_creator(User, name="User", exclude=("password",))
 UserIn_Pydantic = pydantic_model_creator(User, name="UserIn", exclude_readonly=True)
