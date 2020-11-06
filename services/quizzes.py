@@ -1,7 +1,7 @@
 from tortoise.exceptions import IntegrityError
 
-from database.models import Quiz, Question
 from api.exceptions import NotImplementedException
+from database.models import Quiz, Question, Quiz_Pydantic
 
 
 async def create(quiz_data, user_data):
@@ -14,7 +14,7 @@ async def create(quiz_data, user_data):
             question = await Question.create(**question.dict(exclude_unset=True))
             await quiz.questions.add(question)
 
-        return quiz.id
+        return await Quiz_Pydantic.from_tortoise_orm(quiz)
 
     except IntegrityError:
         raise NotImplementedException
