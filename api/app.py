@@ -4,8 +4,8 @@ from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordRequestForm
 
 from api.initializer import init
-from api.schemas import Token, QuizData
 from services import users, quizzes, subjects
+from api.schemas import Token, QuizData, QuizAnswer, QuizReport
 from api.exceptions import IncorrectUsernameOrPasswordException
 from security.authentication import authenticate_user, create_access_token, get_current_user
 from database.models import (User_Pydantic, UserIn_Pydantic, Subject_Pydantic,
@@ -91,6 +91,13 @@ async def get_quiz(quiz_id: int, current_user: User_Pydantic = Depends(get_curre
     quiz = await quizzes.get(quiz_id=quiz_id)
 
     return quiz
+
+
+@app.post("/answer/quiz/{quiz_id}", response_model=QuizReport)
+async def answer_quiz(quiz_id: int, quiz_answer: QuizAnswer):
+    score = await quizzes.answer(quiz_answer)
+
+    return score
 
 
 if __name__ == '__main__':

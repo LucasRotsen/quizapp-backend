@@ -27,3 +27,23 @@ class QuizData(BaseModel):
     title: str
     description: Optional[str]
     questions: List[QuestionData]
+
+
+class QuestionAnswer(BaseModel):
+    id: int
+    answer: str
+
+
+class QuizAnswer(BaseModel):
+    answers: List[QuestionAnswer]
+
+
+class QuestionReport(BaseModel):
+    answer: str
+    actual: str
+    is_correct: bool = False
+
+
+class QuizReport(BaseModel):
+    score: str
+    questions: List[QuestionReport]
