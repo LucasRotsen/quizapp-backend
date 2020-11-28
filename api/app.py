@@ -71,11 +71,25 @@ async def get_subject(subject_id: int, current_user: User_Pydantic = Depends(get
     return subject
 
 
+@app.get("/quizzes")
+async def get_quizzes(current_user: User_Pydantic = Depends(get_current_user)):
+    quiz_list = await quizzes.get()
+
+    return quiz_list
+
+
 @app.post("/quizzes/create", response_model=Quiz_Pydantic)
 async def create_quiz(quiz_data: QuizData, current_user: User_Pydantic = Depends(get_current_user)):
     quiz = await quizzes.create(quiz_data, current_user)
 
     logger.info(f'Quiz #{quiz.id} created!')
+    return quiz
+
+
+@app.get("/quiz/{quiz_id}", response_model=Quiz_Pydantic)
+async def get_quiz(quiz_id: int, current_user: User_Pydantic = Depends(get_current_user)):
+    quiz = await quizzes.get(quiz_id=quiz_id)
+
     return quiz
 
 

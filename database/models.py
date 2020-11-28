@@ -130,6 +130,7 @@ UserIn_Pydantic = pydantic_model_creator(User, name="UserIn", exclude_readonly=T
 
 Quiz_Pydantic = pydantic_model_creator(Quiz, name="Quiz")
 QuizIn_Pydantic = pydantic_model_creator(Quiz, name="QuizIn", exclude_readonly=True)
+Quiz_Pydantic_List = pydantic_queryset_creator(Quiz)
 
 Question_Pydantic = pydantic_model_creator(Question, name="Question")
 QuestionIn_Pydantic = pydantic_model_creator(Question, name="QuestionIn", exclude_readonly=True)
