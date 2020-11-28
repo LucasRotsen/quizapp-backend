@@ -8,7 +8,8 @@ from api.schemas import Token, QuizData
 from services import users, quizzes, subjects
 from api.exceptions import IncorrectUsernameOrPasswordException
 from security.authentication import authenticate_user, create_access_token, get_current_user
-from database.models import User_Pydantic, UserIn_Pydantic, Subject_Pydantic, SubjectIn_Pydantic, Quiz_Pydantic
+from database.models import (User_Pydantic, UserIn_Pydantic, Subject_Pydantic,
+                             SubjectIn_Pydantic, Quiz_Pydantic)
 
 app = FastAPI(
     title='QuizApp API',
@@ -48,11 +49,25 @@ async def sign_up(user: UserIn_Pydantic):
     return user
 
 
+@app.get("/subjects")
+async def get_subjects(current_user: User_Pydantic = Depends(get_current_user)):
+    subject_list = await subjects.get()
+
+    return subject_list
+
+
 @app.post("/subjects/create", response_model=Subject_Pydantic)
 async def create_subject(subject: SubjectIn_Pydantic, current_user: User_Pydantic = Depends(get_current_user)):
     subject = await subjects.create(subject)
 
     logger.info(f'Subject #{subject.id} created!')
+    return subject
+
+
+@app.get("/subject/{subject_id}", response_model=Subject_Pydantic)
+async def get_subject(subject_id: int, current_user: User_Pydantic = Depends(get_current_user)):
+    subject = await subjects.get(subject_id=subject_id)
+
     return subject
 
 

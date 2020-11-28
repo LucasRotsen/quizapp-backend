@@ -1,6 +1,6 @@
 from tortoise.models import Model
 from tortoise import Tortoise, fields
-from tortoise.contrib.pydantic import pydantic_model_creator
+from tortoise.contrib.pydantic import pydantic_model_creator, pydantic_queryset_creator
 
 from security.authentication import get_password_hash
 
@@ -140,5 +140,6 @@ QuizQuestionIn_Pydantic = pydantic_model_creator(Question, name="QuizQuestionIn"
 Answer_Pydantic = pydantic_model_creator(Answer, name="Answer")
 AnswerIn_Pydantic = pydantic_model_creator(Answer, name="AnswerIn", exclude_readonly=True)
 
-Subject_Pydantic = pydantic_model_creator(Subject, name="Subject")
+Subject_Pydantic = pydantic_model_creator(Subject, name="Subject", exclude=("questions",))
 SubjectIn_Pydantic = pydantic_model_creator(Subject, name="SubjectIn", exclude_readonly=True)
+Subject_Pydantic_List = pydantic_queryset_creator(Subject, sort_alphabetically=True, exclude=("questions",))

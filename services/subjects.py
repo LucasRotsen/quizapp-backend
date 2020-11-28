@@ -1,7 +1,16 @@
 from tortoise.exceptions import IntegrityError
 
-from database.models import Subject, Subject_Pydantic
+from database.models import Subject, Subject_Pydantic, Subject_Pydantic_List
 from api.exceptions import NotImplementedException, SubjectAlreadyExistsException
+
+
+async def get(subject_id=None):
+    if not subject_id:
+        subjects = await Subject_Pydantic_List.from_queryset(Subject.all())
+        return subjects.dict().get('__root__')
+
+    subject = await Subject_Pydantic.from_queryset_single(Subject.get(id=subject_id))
+    return subject
 
 
 async def create(subject):
