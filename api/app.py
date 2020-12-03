@@ -1,9 +1,11 @@
 import uvicorn
 from loguru import logger
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 
 from api.initializer import init
+from api.config import ALLOWED_ORIGINS
 from services import users, quizzes, subjects
 from api.schemas import Token, QuizData, QuizAnswer, QuizReport
 from api.exceptions import IncorrectUsernameOrPasswordException
@@ -11,12 +13,21 @@ from security.authentication import authenticate_user, create_access_token, get_
 from database.models import (User_Pydantic, UserIn_Pydantic, Subject_Pydantic,
                              SubjectIn_Pydantic, Quiz_Pydantic)
 
+
 app = FastAPI(
     title='QuizApp API',
     description='RESTful API for Quiz / Trivia management',
     version='0.0.1',
     docs_url='/documentation',
     redoc_url=None,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+    allow_origins=ALLOWED_ORIGINS
 )
 
 
